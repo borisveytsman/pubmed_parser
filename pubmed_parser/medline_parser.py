@@ -25,15 +25,15 @@ def parse_pmid(pubmed_article):
         A string of PubMed ID parsed from a given
     """
     medline = pubmed_article.find("MedlineCitation")
-    if medline.find("PMID") is not None:
+    if medline.find("PMID") != None:
         pmid = medline.find("PMID").text
         return pmid
     else:
         article_ids = pubmed_article.find("PubmedData/ArticleIdList")
-        if article_ids is not None:
+        if article_ids != None:
             pmid = article_ids.find('ArticleId[@IdType="pmid"]')
-            if pmid is not None:
-                if pmid.text is not None:
+            if pmid != None:
+                if pmid.text != None:
                     pmid = pmid.text.strip()
                 else:
                     pmid = ""
@@ -67,11 +67,11 @@ def parse_doi(pubmed_article):
             doi = e.text.strip() or "" if e.attrib.get("EIdType", "") == "doi" else ""
     else:
         article_ids = pubmed_article.find("PubmedData/ArticleIdList")
-        if article_ids is not None:
+        if article_ids != None:
             doi = article_ids.find('ArticleId[@IdType="doi"]')
             doi = (
-                (doi.text.strip() if doi.text is not None else "")
-                if doi is not None
+                (doi.text.strip() if doi.text != None else "")
+                if doi != None
                 else ""
             )
         else:
@@ -94,7 +94,7 @@ def parse_mesh_terms(medline):
         String of semi-colon ``;`` spearated MeSH (Medical Subject Headings)
         terms contained in the document.
     """
-    if medline.find("MeshHeadingList") is not None:
+    if medline.find("MeshHeadingList") != None:
         mesh = medline.find("MeshHeadingList")
         mesh_terms_list = [
             m.find("DescriptorName").attrib.get("UI", "")
@@ -123,7 +123,7 @@ def parse_publication_types(medline):
     """
     publication_types = []
     publication_type_list = medline.find("Article/PublicationTypeList")
-    if publication_type_list is not None:
+    if publication_type_list != None:
         publication_type_list = publication_type_list.findall("PublicationType")
         for publication_type in publication_type_list:
             publication_types.append(
@@ -150,9 +150,9 @@ def parse_keywords(medline):
     """
     keyword_list = medline.find("KeywordList")
     keywords = list()
-    if keyword_list is not None:
+    if keyword_list != None:
         for k in keyword_list.findall("Keyword"):
-            if k.text is not None:
+            if k.text != None:
                 keywords.append(k.text)
         keywords = "; ".join(keywords)
     else:
@@ -175,7 +175,7 @@ def parse_chemical_list(medline):
     """
     chemical_list = []
     chemicals = medline.find("ChemicalList")
-    if chemicals is not None:
+    if chemicals != None:
         for chemical in chemicals.findall("Chemical"):
             substance_name = chemical.find("NameOfSubstance")
             chemical_list.append(
@@ -203,7 +203,7 @@ def parse_other_id(medline):
     pmc = ""
     other_id = list()
     oids = medline.findall("OtherID")
-    if oids is not None:
+    if oids != None:
         for oid in oids:
             if "PMC" in oid.text:
                 pmc = oid.text
@@ -230,22 +230,22 @@ def parse_journal_info(medline):
         `issn_linking` and `country`
     """
     journal_info = medline.find("MedlineJournalInfo")
-    if journal_info is not None:
-        if journal_info.find("MedlineTA") is not None:
+    if journal_info != None:
+        if journal_info.find("MedlineTA") != None:
             medline_ta = (
                 journal_info.find("MedlineTA").text or ""
             )  # equivalent to Journal name
         else:
             medline_ta = ""
-        if journal_info.find("NlmUniqueID") is not None:
+        if journal_info.find("NlmUniqueID") != None:
             nlm_unique_id = journal_info.find("NlmUniqueID").text or ""
         else:
             nlm_unique_id = ""
-        if journal_info.find("ISSNLinking") is not None:
+        if journal_info.find("ISSNLinking") != None:
             issn_linking = journal_info.find("ISSNLinking").text
         else:
             issn_linking = ""
-        if journal_info.find("Country") is not None:
+        if journal_info.find("Country") != None:
             country = journal_info.find("Country").text or ""
         else:
             country = ""
@@ -284,26 +284,26 @@ def parse_grant_id(pubmed_article):
 
     grants = article.find("GrantList")
     grant_list = list()
-    if grants is not None:
+    if grants != None:
         grants_list = grants.getchildren()
         for grant in grants_list:
             grant_country = grant.find("Country")
-            if grant_country is not None:
+            if grant_country != None:
                 country = grant_country.text
             else:
                 country = ""
             grant_agency = grant.find("Agency")
-            if grant_agency is not None:
+            if grant_agency != None:
                 agency = grant_agency.text
             else:
                 agency = ""
             grant_acronym = grant.find("Acronym")
-            if grant_acronym is not None:
+            if grant_acronym != None:
                 acronym = grant_acronym.text
             else:
                 acronym = ""
             grant_id = grant.find("GrantID")
-            if grant_id is not None:
+            if grant_id != None:
                 gid = grant_id.text
             else:
                 gid = ""
@@ -333,28 +333,28 @@ def parse_author_affiliation(medline):
     """
     authors = []
     article = medline.find("Article")
-    if article is not None:
+    if article != None:
         author_list = article.find("AuthorList")
-        if author_list is not None:
+        if author_list != None:
             authors_list = author_list.findall("Author")
             for author in authors_list:
-                if author.find("ForeName") is not None:
+                if author.find("ForeName") != None:
                     forename = (author.find("ForeName").text or "").strip() or ""
                 else:
                     forename = ""
-                if author.find("Initials") is not None:
+                if author.find("Initials") != None:
                     initials = (author.find("Initials").text or "").strip() or ""
                 else:
                     initials = ""
-                if author.find("LastName") is not None:
+                if author.find("LastName") != None:
                     lastname = (author.find("LastName").text or "").strip() or ""
                 else:
                     lastname = ""
-                if author.find("Identifier") is not None:
+                if author.find("Identifier") != None:
                     identifier = (author.find("Identifier").text or "").strip() or ""
                 else:
                     identifier = ""
-                if author.find("AffiliationInfo/Affiliation") is not None:
+                if author.find("AffiliationInfo/Affiliation") != None:
                     affiliation = author.find("AffiliationInfo/Affiliation").text or ""
                     affiliation = affiliation.replace(
                         "For a full list of the authors' affiliations please see the Acknowledgements section.",
@@ -400,14 +400,14 @@ def date_extractor(journal, year_info_only):
     issue = journal.xpath("JournalIssue")[0]
     issue_date = issue.find("PubDate")
 
-    if issue_date.find("Year") is not None:
+    if issue_date.find("Year") != None:
         year = issue_date.find("Year").text
         if not year_info_only:
-            if issue_date.find("Month") is not None:
+            if issue_date.find("Month") != None:
                 month = month_or_day_formater(issue_date.find("Month").text)
-                if issue_date.find("Day") is not None:
+                if issue_date.find("Day") != None:
                     day = month_or_day_formater(issue_date.find("Day").text)
-    elif issue_date.find("MedlineDate") is not None:
+    elif issue_date.find("MedlineDate") != None:
         year_text = issue_date.find("MedlineDate").text
         year = re.findall(r"\d{4}", year_text)
         if len(year) >= 1:
@@ -443,11 +443,11 @@ def parse_references(pubmed_article, reference_list):
     """
     references = []
     reference_list_data = pubmed_article.find("PubmedData/ReferenceList")
-    if reference_list_data is not None:
+    if reference_list_data != None:
         for ref in reference_list_data.findall("Reference"):
             citation = ref.find("Citation")
-            if citation is not None:
-                if citation.text is not None:
+            if citation != None:
+                if citation.text != None:
                     citation = citation.text.strip()
                 else:
                     citation = ""
@@ -456,11 +456,11 @@ def parse_references(pubmed_article, reference_list):
             article_ids = ref.find("ArticleIdList")
             pmid = (
                 article_ids.find('ArticleId[@IdType="pubmed"]')
-                if article_ids is not None
+                if article_ids != None
                 else None
             )
-            if pmid is not None:
-                if pmid.text is not None:
+            if pmid != None:
+                if pmid.text != None:
                     pmid = pmid.text.strip()
                 else:
                     pmid = ""
@@ -472,7 +472,7 @@ def parse_references(pubmed_article, reference_list):
         return references
     else:
         references = ";".join(
-            [ref["pmid"] for ref in references if ref["pmid"] is not ""]
+            [ref["pmid"] for ref in references if ref["pmid"] != ""]
         )
         return references
 
@@ -507,17 +507,17 @@ def parse_article_info(
     medline = pubmed_article.find("MedlineCitation")
     article = medline.find("Article")
 
-    if article.find("ArticleTitle") is not None:
+    if article.find("ArticleTitle") != None:
         title = stringify_children(article.find("ArticleTitle")).strip() or ""
     else:
         title = ""
 
-    if article.find("Journal/JournalIssue/Volume") is not None:
+    if article.find("Journal/JournalIssue/Volume") != None:
         volume = article.find("Journal/JournalIssue/Volume").text or ""
     else:
         volume = ""
 
-    if article.find("Journal/JournalIssue/Issue") is not None:
+    if article.find("Journal/JournalIssue/Issue") != None:
         issue = article.find("Journal/JournalIssue/Issue").text or ""
     else:
         issue = ""
@@ -527,13 +527,13 @@ def parse_article_info(
     else:
         issue = f"{volume}({issue})"
 
-    if article.find("Pagination/MedlinePgn") is not None:
+    if article.find("Pagination/MedlinePgn") != None:
         pages = article.find("Pagination/MedlinePgn").text or ""
     else:
         pages = ""
 
     category = "NlmCategory" if nlm_category else "Label"
-    if article.find("Abstract/AbstractText") is not None:
+    if article.find("Abstract/AbstractText") != None:
         # parsing structured abstract
         if len(article.findall("Abstract/AbstractText")) > 1:
             abstract_list = list()
@@ -549,7 +549,7 @@ def parse_article_info(
             abstract = (
                 stringify_children(article.find("Abstract/AbstractText")).strip() or ""
             )
-    elif article.find("Abstract") is not None:
+    elif article.find("Abstract") != None:
         abstract = stringify_children(article.find("Abstract")).strip() or ""
     else:
         abstract = ""
@@ -560,7 +560,7 @@ def parse_article_info(
             [
                 author.get("affiliation", "")
                 for author in authors_dict
-                if author.get("affiliation", "") is not ""
+                if author.get("affiliation", "") != ""
             ]
         )
         authors = ";".join(

@@ -13,6 +13,7 @@ __all__ = [
     "parse_pubmed_paragraph",
     "parse_pubmed_references",
     "parse_pubmed_caption",
+    "read_xml"
 ]
 
 
@@ -98,7 +99,7 @@ def parse_coi_statements(tree):
             yield '\n'.join(el.itertext())
 
 
-def parse_pubmed_xml(path, include_path=False, nxml=False):
+def parse_pubmed_xml(path=None, tree=None, include_path=False, nxml=False):
     """
     Given an input XML path to PubMed XML file, extract information and metadata
     from a given XML file and return parsed XML file in dictionary format.
@@ -108,6 +109,8 @@ def parse_pubmed_xml(path, include_path=False, nxml=False):
     ----------
     path: str
         A path to a given PumMed XML file
+    tree: XML tree
+        Alternatively, a parsed tree
     include_path: bool
         if True, include a key 'path_to_file' in an output dictionary
         default: False
@@ -125,7 +128,17 @@ def parse_pubmed_xml(path, include_path=False, nxml=False):
         'publication_date', 'subjects'
     }
     """
-    tree = read_xml(path, nxml)
+
+    if (tree == None):
+        if (path != None):
+            tree = read_xml(path, nxml)
+        else:
+            raise ValueError('Either path or tree must be set!')
+    else:
+        if (path != None):
+            raise ValueError('Only one of path or tree must be set!')
+
+        
 
     tree_title = tree.find(".//title-group/article-title")
     if tree_title is not None:
@@ -229,7 +242,7 @@ def parse_pubmed_xml(path, include_path=False, nxml=False):
     return dict_out
 
 
-def parse_pubmed_references(path):
+def parse_pubmed_references(path=None, tree=None):
     """
     Given path to xml file, parse references articles
     to list of dictionary
@@ -238,13 +251,24 @@ def parse_pubmed_references(path):
     ----------
     path: str
         A string to an XML path.
+    tree: XML tree
+        Alternatively, a parsed tree
 
     Return
     ------
     dict_refs: list
         A list contains dictionary for references made in a given file.
     """
-    tree = read_xml(path)
+
+    if (tree == None):
+        if (path != None):
+            tree = read_xml(path)
+        else:
+            raise ValueError('Either path or tree must be set!')
+    else:
+        if (path != None):
+            raise ValueError('Only one of path or tree must be set!')
+
     dict_article_meta = parse_article_meta(tree)
     pmid = dict_article_meta["pmid"]
     pmc = dict_article_meta["pmc"]
@@ -323,7 +347,7 @@ def parse_pubmed_references(path):
     return dict_refs
 
 
-def parse_pubmed_paragraph(path, all_paragraph=False):
+def parse_pubmed_paragraph(path=None, tree=None, all_paragraph=False):
     """
     Give path to a given PubMed OA file, parse and return
     a dictionary of all paragraphs, section that it belongs to,
@@ -333,6 +357,8 @@ def parse_pubmed_paragraph(path, all_paragraph=False):
     ----------
     path: str
         A string to an XML path.
+    tree: XML tree
+        Alternatively, a parsed tree
     all_paragraph: bool
         By default, this function will only append a paragraph if there is at least
         one reference made in a paragraph (to aviod noisy parsed text).
@@ -349,7 +375,16 @@ def parse_pubmed_paragraph(path, all_paragraph=False):
         'reference_ids' which is a list of reference ``rid`` made in a paragraph,
         'section' name of an article, and section 'text'
     """
-    tree = read_xml(path)
+
+    if (tree == None):
+        if (path != None):
+            tree = read_xml(path)
+        else:
+            raise ValueError('Either path or tree must be set!')
+    else:
+        if (path != None):
+            raise ValueError('Only one of path or tree must be set!')
+
     dict_article_meta = parse_article_meta(tree)
     pmid = dict_article_meta["pmid"]
     pmc = dict_article_meta["pmc"]
@@ -383,7 +418,7 @@ def parse_pubmed_paragraph(path, all_paragraph=False):
     return dict_pars
 
 
-def parse_pubmed_caption(path):
+def parse_pubmed_caption(path=None, tree=None):
     """
     Given single xml path, extract figure caption and
     reference id back to that figure
@@ -392,6 +427,8 @@ def parse_pubmed_caption(path):
     ----------
     path: str
         A string to an PubMed OA XML path
+    tree: XML tree
+        Alternatively, a parsed tree
 
     Return
     ------
@@ -412,7 +449,16 @@ def parse_pubmed_caption(path):
         'graphic_ref': 'pone.0000217.g001'
     }, ...]
     """
-    tree = read_xml(path)
+    if (tree == None):
+        if (path != None):
+            tree = read_xml(path)
+        else:
+            raise ValueError('Either path or tree must be set!')
+    else:
+        if (path != None):
+            raise ValueError('Only one of path or tree must be set!')
+
+
     dict_article_meta = parse_article_meta(tree)
     pmid = dict_article_meta["pmid"]
     pmc = dict_article_meta["pmc"]
@@ -482,7 +528,7 @@ def table_to_df(table_text):
         return None, None
 
 
-def parse_pubmed_table(path, return_xml=True):
+def parse_pubmed_table(path=None, tree=None, return_xml=True):
     """
     Parse table from given Pubmed Open-Access XML file
 
@@ -490,6 +536,8 @@ def parse_pubmed_table(path, return_xml=True):
     ----------
     path: str
         A string to an PubMed OA XML path
+    tree: XML tree
+        Alternatively, a parsed tree
     return_xml: bool
         if True, a dictionary (in an output list)
         will have a key 'table_xml' which is an XML string of a parsed table
@@ -501,7 +549,15 @@ def parse_pubmed_table(path, return_xml=True):
         A list contains all dictionary of table with its metadata.
         Metadata includes 'pmid', 'pmc', 'label' (in a full text), 'caption'
     """
-    tree = read_xml(path)
+    if (tree == None):
+        if (path != None):
+            tree = read_xml(path)
+        else:
+            raise ValueError('Either path or tree must be set!')
+    else:
+        if (path != None):
+            raise ValueError('Only one of path or tree must be set!')
+
     dict_article_meta = parse_article_meta(tree)
     pmid = dict_article_meta["pmid"]
     pmc = dict_article_meta["pmc"]
