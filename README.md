@@ -1,3 +1,5 @@
+
+
 # Pubmed Parser: A Python Parser for PubMed Open-Access XML Subset and MEDLINE XML Dataset
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/titipata/pubmed_parser/blob/master/LICENSE) [![DOI](https://joss.theoj.org/papers/10.21105/joss.01979/status.svg)](https://doi.org/10.21105/joss.01979)
@@ -16,6 +18,7 @@ For available APIs and details about the dataset, please see our [wiki page](htt
 
 Below, we list available parsers from `pubmed_parser`.
 
+  * [Read XML tree](#read_xml_tree)
   * [Parse PubMed OA XML information](#parse-pubmed-oa-xml-information)
   * [Parse PubMed OA citation references](#parse-pubmed-oa-citation-references)
   * [Parse PubMed OA images and captions](#parse-pubmed-oa-images-and-captions)
@@ -26,6 +29,15 @@ Below, we list available parsers from `pubmed_parser`.
   * [Parse MEDLINE XML from eutils website](#parse-medline-xml-from-eutils-website)
   * [Parse MEDLINE XML citations from website](#parse-medline-xml-citations-from-website)
   * [Parse Outgoing XML citations from website](#parse-outgoing-xml-citations-from-website)
+
+### Read XML Tree
+
+The functions below work either with files or with pre-read XML trees.  If you run several extraction routines on the same file, you may want to read the tree once:
+
+``` python
+import pubmed_parser as pp
+mytree=pp.utils.read_xml(path)
+```
 
 ### Parse PubMed OA XML information
 
@@ -59,6 +71,8 @@ We created a simple parser for the PubMed Open Access Subset where you can give 
 ``` python
 import pubmed_parser as pp
 dict_out = pp.parse_pubmed_xml(path)
+# Alternatively
+dict_out = pp.parse_pubmed_xml(tree=mytree)
 ```
 
 ### Parse PubMed OA citation references
@@ -75,7 +89,9 @@ The function `parse_pubmed_references` will process a Pubmed Open Access XML fil
 * `year` : Publication year as it appears in the reference (may include letter suffix, e.g.2007a)
 
 ``` python
-dicts_out = pp.parse_pubmed_references(path) # return list of dictionary
+dicts_out = pp.parse_pubmed_references(path) # return list of dictionaries
+# Alternatively
+dicts_out = pp.parse_pubmed_references(tree=mytree)
 ```
 
 ### Parse PubMed OA images and captions
@@ -90,7 +106,9 @@ The function `parse_pubmed_caption` can parse image captions from a given path t
 * `graphic_ref` : reference to image file name provided from Pubmed OA
 
 ``` python
-dicts_out = pp.parse_pubmed_caption(path) # return list of dictionary
+dicts_out = pp.parse_pubmed_caption(path) # return list of dictionaries
+# Alternatively
+dicts_out = pp.parse_pubmed_caption(tree=mytree) 
 ```
 
 ### Parse PubMed OA Paragraph
@@ -108,9 +126,11 @@ This IDs can merge with output from `parse_pubmed_references` .
 
 ``` python
 dicts_out = pp.parse_pubmed_paragraph('data/6605965a.nxml', all_paragraph=False)
+# Alternatively
+dicts_out = pp.parse_pubmed_paragraph(tree=mytree, all_paragraph=False)
 ```
 
-### Parse PubMed OA Table [WIP]
+### Parse PubMed OA Table
 
 You can use `parse_pubmed_table` to parse table from XML file. This function will return list of dictionaries where each has following keys.
 
@@ -124,6 +144,8 @@ You can use `parse_pubmed_table` to parse table from XML file. This function wil
 
 ``` python
 dicts_out = pp.parse_pubmed_table('data/medline16n0902.xml.gz', return_xml=False)
+# Alternatively
+dicts_out = pp.parse_pubmed_table(tree=mytree, return_xml=False)
 ```
 
 ### Parse MEDLINE XML

@@ -72,10 +72,10 @@ def parse_article_meta(tree):
     pub_id_node = article_meta.find('article-id[@pub-id-type="publisher-id"]')
     doi_node = article_meta.find('article-id[@pub-id-type="doi"]')
 
-    pmid = pmid_node.text if pmid_node is not None else ""
-    pmc = pmc_node.text if pmc_node is not None else ""
-    pub_id = pub_id_node.text if pub_id_node is not None else ""
-    doi = doi_node.text if doi_node is not None else ""
+    pmid = pmid_node.text if pmid_node != None else ""
+    pmc = pmc_node.text if pmc_node != None else ""
+    pub_id = pub_id_node.text if pub_id_node != None else ""
+    doi = doi_node.text if doi_node != None else ""
 
     dict_article_meta = {"pmid": pmid, "pmc": pmc, "doi": doi, "publisher_id": pub_id}
 
@@ -141,7 +141,7 @@ def parse_pubmed_xml(path=None, tree=None, include_path=False, nxml=False):
         
 
     tree_title = tree.find(".//title-group/article-title")
-    if tree_title is not None:
+    if tree_title != None:
         title = [t for t in tree_title.itertext()]
         sub_title = tree.xpath(".//title-group/subtitle/text()")
         title.extend(sub_title)
@@ -162,22 +162,22 @@ def parse_pubmed_xml(path=None, tree=None, include_path=False, nxml=False):
         abstract = ""
 
     journal_node = tree.findall(".//journal-title")
-    if journal_node is not None:
+    if journal_node != None:
         journal = " ".join([j.text for j in journal_node])
     else:
         journal = ""
 
     dict_article_meta = parse_article_meta(tree)
     pub_year_node = tree.find(".//pub-date/year")
-    pub_year = pub_year_node.text if pub_year_node is not None else ""
+    pub_year = pub_year_node.text if pub_year_node != None else ""
     pub_month_node = tree.find(".//pub-date/month")
-    pub_month = pub_month_node.text if pub_month_node is not None else "01"
+    pub_month = pub_month_node.text if pub_month_node != None else "01"
     pub_day_node = tree.find(".//pub-date/day")
-    pub_day = pub_day_node.text if pub_day_node is not None else "01"
+    pub_day = pub_day_node.text if pub_day_node != None else "01"
 
     subjects_node = tree.findall(".//article-categories//subj-group/subject")
     subjects = list()
-    if subjects_node is not None:
+    if subjects_node != None:
         for s in subjects_node:
             subject = " ".join([s_.strip() for s_ in s.itertext()]).strip()
             subjects.append(subject)
@@ -278,41 +278,41 @@ def parse_pubmed_references(path=None, tree=None):
     for reference in references:
         ref_id = reference.attrib["id"]
 
-        if reference.find("mixed-citation") is not None:
+        if reference.find("mixed-citation") != None:
             ref = reference.find("mixed-citation")
-        elif reference.find("element-citation") is not None:
+        elif reference.find("element-citation") != None:
             ref = reference.find("element-citation")
         else:
             ref = None
 
-        if ref is not None:
-            if "publication-type" in ref.attrib.keys() and ref is not None:
-                if ref.attrib.values() is not None:
+        if ref != None:
+            if "publication-type" in ref.attrib.keys() and ref != None:
+                if ref.attrib.values() != None:
                     journal_type = ref.attrib.values()[0]
                 else:
                     journal_type = ""
                 names = list()
-                if ref.find("name") is not None:
+                if ref.find("name") != None:
                     for n in ref.findall("name"):
                         name = " ".join([t.text or "" for t in n.getchildren()][::-1])
                         names.append(name)
-                elif ref.find("person-group") is not None:
+                elif ref.find("person-group") != None:
                     for n in ref.find("person-group"):
                         name = " ".join(
                             n.xpath("given-names/text()") + n.xpath("surname/text()")
                         )
                         names.append(name)
-                if ref.find("article-title") is not None:
+                if ref.find("article-title") != None:
                     article_title = stringify_children(ref.find("article-title")) or ""
                     article_title = article_title.replace("\n", " ").strip()
                 else:
 
                     article_title = ""
-                if ref.find("source") is not None:
+                if ref.find("source") != None:
                     journal = ref.find("source").text or ""
                 else:
                     journal = ""
-                if ref.find("year") is not None:
+                if ref.find("year") != None:
                     year = ref.find("year").text or ""
                 else:
                     year = ""
@@ -394,7 +394,7 @@ def parse_pubmed_paragraph(path=None, tree=None, all_paragraph=False):
     for paragraph in paragraphs:
         paragraph_text = stringify_children(paragraph)
         section = paragraph.find("../title")
-        if section is not None:
+        if section != None:
             section = stringify_children(section).strip()
         else:
             section = ""
@@ -465,7 +465,7 @@ def parse_pubmed_caption(path=None, tree=None):
 
     figs = tree.findall(".//fig")
     dict_captions = list()
-    if figs is not None:
+    if figs != None:
         for fig in figs:
             fig_id = fig.attrib["id"]
             fig_label = stringify_children(fig.find("label"))
@@ -473,7 +473,7 @@ def parse_pubmed_caption(path=None, tree=None):
             caption = " ".join([stringify_children(c) for c in fig_captions])
             graphic = fig.find("graphic")
             graphic_ref = None
-            if graphic is not None:
+            if graphic != None:
                 graphic_ref = graphic.attrib.values()[0]
             dict_caption = {
                 "pmid": pmid,
@@ -563,38 +563,38 @@ def parse_pubmed_table(path=None, tree=None, return_xml=True):
     pmc = dict_article_meta["pmc"]
 
     # parse table
-    tables = tree.xpath(".//body.//sec.//table-wrap")
+    tables = tree.findall(".//table-wrap")
     table_dicts = list()
     for table in tables:
-        if table.find("label") is not None:
+        if table.find("label") != None:
             label = unidecode(table.find("label").text or "")
         else:
             label = ""
 
         # table caption
-        if table.find("caption/p") is not None:
+        if table.find("caption/p") != None:
             caption_node = table.find("caption/p")
-        elif table.find("caption/title") is not None:
+        elif table.find("caption/title") != None:
             caption_node = table.find("caption/title")
         else:
             caption_node = None
-        if caption_node is not None:
+        if caption_node != None:
             caption = unidecode(stringify_children(caption_node).strip())
         else:
             caption = ""
 
         # table content
-        if table.find("table") is not None:
+        if table.find("table") != None:
             table_tree = table.find("table")
-        elif table.find("alternatives/table") is not None:
+        elif table.find("alternatives/table") != None:
             table_tree = table.find("alternatives/table")
         else:
             table_tree = None
 
-        if table_tree is not None:
+        if table_tree != None:
             table_xml = etree.tostring(table_tree)
             columns, row_values = table_to_df(table_xml)
-            if row_values is not None:
+            if row_values != None:
                 table_dict = {
                     "pmid": pmid,
                     "pmc": pmc,
